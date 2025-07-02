@@ -5,10 +5,16 @@ import (
 
 	"github.com/Wolkodaf2946/todolist"
 	"github.com/Wolkodaf2946/todolist/pkg/handler"
+	"github.com/Wolkodaf2946/todolist/pkg/repository"
+	"github.com/Wolkodaf2946/todolist/pkg/service"
 )
 
 func main() {
-	handlers := new(handler.Handler) // создаём экземпляр объекта Handler
+
+	repos := repository.NewRepository()
+	services := service.NewService(repos)
+	handlers := handler.NewHandler(services)
+
 	srv := new(todolist.Server)
 	if err := srv.Run("8080", handlers.InitRoutes()); err != nil {
 		// InitRoutes() возвращает объекта типа "указатель на gin.Engine",
