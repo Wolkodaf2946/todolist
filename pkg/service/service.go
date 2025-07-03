@@ -1,10 +1,14 @@
 package service
 
-import "github.com/Wolkodaf2946/todolist/pkg/repository"
+import (
+	"github.com/Wolkodaf2946/todolist"
+	"github.com/Wolkodaf2946/todolist/pkg/repository"
+)
 
 // объеденим заготовки интерфейсов для сущностей
 
 type Authorization interface {
+	CreateUser(user todolist.User) (int, error)
 }
 
 type TodoList interface {
@@ -20,5 +24,7 @@ type Service struct {
 }
 
 func NewService(repos *repository.Repository) *Service {
-	return &Service{}
+	return &Service{
+		Authorization: NewAuthService(repos.Authorization),
+	}
 }
