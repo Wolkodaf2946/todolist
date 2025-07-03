@@ -19,7 +19,7 @@ func (r *AuthPostgres) CreateUser(user todolist.User) (int, error) {
 
 	var id int
 
-	query := fmt.Sprintf("INSERT INTO %s (name, username, password_hash) values ($1, $2, $3) RETURNING id") // напишем запрос
+	query := fmt.Sprintf("INSERT INTO %s (name, username, password_hash) values ($1, $2, $3) RETURNING id", usersTable) // напишем запрос
 	// при создании пользователя используем INSERT указывая имя username и пароль в таблицу
 	// числа с $ - это плэйсхолдеры, в которые буду подставлены значения, которые мы передадим в качестве аргументов
 	// к функции для выполнения запроса к бд.

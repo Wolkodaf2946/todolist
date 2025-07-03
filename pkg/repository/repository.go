@@ -9,7 +9,6 @@ type Authorization interface {
 	CreateUser(user todolist.User) (int, error)
 }
 
-// .sofhoi;sajdf
 type TodoList interface {
 }
 
