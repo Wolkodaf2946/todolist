@@ -3,7 +3,9 @@ package service
 
 import (
 	"crypto/sha1"
+	"errors"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/Wolkodaf2946/todolist"
@@ -12,9 +14,7 @@ import (
 )
 
 const (
-	salt       = "rdxcuahgsdbvihwtoivuwhbrovhnwlighblfkvwodfvbwfpv"
-	signingKey = "qrkjk#4#5FSFJlja#4353KSFjH"
-	tokenTTL   = 12 * time.Hour
+	tokenTTL = 12 * time.Hour
 )
 
 // tokenClaims определяет вашу структуру утверждений для JWT.
@@ -65,7 +65,7 @@ func (s *AuthService) GenerateToken(username, password string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	// Подписываем токен с помощью секретного ключа.
-	signedToken, err := token.SignedString([]byte(signingKey))
+	signedToken, err := token.SignedString([]byte(os.Getenv("SIGNING_KEY")))
 	if err != nil {
 		return "", fmt.Errorf("token signature error: %w", err)
 	}
@@ -73,10 +73,29 @@ func (s *AuthService) GenerateToken(username, password string) (string, error) {
 	return signedToken, nil
 }
 
+func (s *AuthService) ParseToken(accessToken string) (int, error) {
+	token, err := jwt.ParseWithClaims(accessToken, &tokenClaims{}, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("invalid signing method")
+		}
+		return []byte(os.Getenv("SIGNING_KEY")), nil
+	})
+	if err != nil {
+		return 0, err
+	}
+
+	claims, ok := token.Claims.(*tokenClaims)
+	if !ok {
+		return 0, errors.New("token claims are not of type *tokenClaims")
+	}
+
+	return claims.UserId, nil
+}
+
 func generatePasswordHash(password string) string {
 	hash := sha1.New()
 	hash.Write([]byte(password))
 
-	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))
+	return fmt.Sprintf("%x", hash.Sum([]byte(os.Getenv("SALT"))))
 
 }

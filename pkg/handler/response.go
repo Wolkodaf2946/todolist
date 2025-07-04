@@ -11,7 +11,7 @@ type error struct {
 
 func newErrorResponse(c *gin.Context, statusCode int, message string) {
 	logrus.Error(message)
-	c.AbortWithStatusJSON(statusCode, error{Message: message}) // принимает http-статус код и тело ответа,
+	c.AbortWithStatusJSON(statusCode, error{message}) // принимает http-статус код и тело ответа,
 	// в качестве ответа функция принимает интерфейс,
 	// поэтому мы можем передать как структуру,
 	// так и мапу со строкой в качестве ключа и интерфейса в качестве значения
