@@ -7,6 +7,11 @@ import (
 
 type Authorization interface {
 	CreateUser(user todolist.User) (int, error)
+
+	// для генерации токена нам нужно получить пользователя из базы
+	// если такого польователя нет, то возвращаем ошибку
+	// иначе генерируем токен, в который записываем id пользователя
+	GetUser(username, password string) (todolist.User, error)
 }
 
 type TodoList interface {
